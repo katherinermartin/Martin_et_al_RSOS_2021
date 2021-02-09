@@ -1,4 +1,4 @@
-# Risk ratio analysis: risk of FP in C. mydas with Bonferroni correction where the confidence level for the calculation is set to 99.8%
+# Risk ratio of top alleles in C. mydas with FP, with Bonferroni correction where the confidence level for the calculation is set to 99.8%
 
 library(epiR)
 library(tidyverse)
