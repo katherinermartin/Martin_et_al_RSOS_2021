@@ -7,8 +7,6 @@ library(reshape2)
 library(scales)
 library(unikn)
 
-setwd("~/Documents/UCF/Research/MHC_Class_I/Analysis/03.05.19_analysis/supertyping/Jan21/")
-
 # Data frame of amino acid residue values for 124 MHC alleles (includes Martin 2021 alleles and those alleles from Stiebens et al. 2013)
 
 sea_turtle_full <- read.csv("MHC_amino_acid_matrix_values_for_DAPC.csv") # load in data matrix; electrochemical values for each amino acid in the full pepetide binding region, based on 
