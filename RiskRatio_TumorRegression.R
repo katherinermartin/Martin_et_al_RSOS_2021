@@ -4,6 +4,7 @@ library(epiR)
 library(tidyverse)
 library(ggplot2)
 library(svglite)
+library(ggplot2)
 
 # top alleles (those alleles that occur in 10 or more individuals of that species) in Cm with FP so that I can assess relative risk of regression.
 
@@ -199,7 +200,6 @@ Cm_row_names <- read.csv("../Data/top alleles/Cm_regressed_top_alleles.csv")
 
 # graph a forest plot
 
-library(ggplot2)
 ggplot(data=risk_ratio_regressed_top_Cm_alleles, aes(x=allele, y=est, ymin=lower, ymax=upper)) +
   geom_pointrange(shape = 18) +
   geom_hline(yintercept=1, lty=2, color = "red") +  # add a dotted line at x=1 after flip
