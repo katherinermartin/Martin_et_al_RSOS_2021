@@ -1,4 +1,6 @@
-# Risk ratio of top alleles in C. mydas with FP, with Bonferroni correction where the confidence level for the calculation is set to 99.8%
+# Risk ratio of top alleles in C. mydas with FP, with Bonferroni correction
+
+# CI will be 99.8%; familywise error rate is 95% so 1-alpha/m where m =  comparisons so 1-(0.05)/6 = 0.998
 
 library(epiR)
 library(tidyverse)
