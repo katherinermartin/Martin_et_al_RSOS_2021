@@ -2,7 +2,8 @@
 
 library(ggplot2)
 library(dplyr)
-setwd("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/")
+
+# read in data:
 
 df <- read.csv("classI_juveniles_morpho_FP.csv")
 mean <- mean(df$allele_count)
