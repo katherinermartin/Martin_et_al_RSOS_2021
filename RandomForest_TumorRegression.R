@@ -146,7 +146,7 @@ colnames(importance_rf_9_b)<-c("importance")
 
 cor(importance_rf_9_a,importance_rf_9_b) # A correlation of 0.997668 for predictor importance values between forests when mtry = 9 and ntree = 10,000
 
-# Build final model with mtry = 9, ntree = 10,000, as mtry = 9 had slightly importance value correlations
+# Build final model with mtry = 9, ntree = 10,000, as mtry = 9 had slightly importance value correlation
 
 # Separate into training and test data (70% and 30%, respectively)
 set.seed(3)
