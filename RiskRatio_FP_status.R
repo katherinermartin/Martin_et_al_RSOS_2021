@@ -1,5 +1,4 @@
-# Risk ratio analysis: risk of FP in C. mydas
-# this script includes 2) analysis uncorrected for multiple comparisons and 2) analysis corrected for multiple comparisons
+# Risk ratio of top alleles in C. mydas with FP
 
 library(epiR)
 library(tidyverse)
