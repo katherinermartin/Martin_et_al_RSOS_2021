@@ -8,7 +8,20 @@ library(dplyr)
 df <- read.csv("classI_juveniles_morpho_FP.csv")
 mean <- mean(df$allele_count)
 mean # avg allele count is 3.57 across all animals
-sd(df$allele_count) #1.405
+sd(df$allele_count) # standard deviaiton is 1.41
+
+# average allele count per species
+# Caretta caretta:
+Cc <- df %>% filter(species == "Caretta caretta")
+Cc_mean <- mean(Cc$allele_count)
+Cc_mean # 3.93
+sd(Cc$allele_count) # standard deviation is 1.491
+
+# Chelonia mydas:
+Cm <- df %>% filter(species == "Chelonia mydas")
+Cm_mean <- mean(Cm$allele_count)
+Cm_mean # 3.46
+sd(Cm$allele_count) # standard deviation is 1.36
 
 # get frequencies for each category of number of alleles
 allele_count <- df %>%
