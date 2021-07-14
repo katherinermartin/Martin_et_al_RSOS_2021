@@ -9,7 +9,6 @@ library(svglite)
 
 # top alleles (those alleles that occur in 10 or more individuals of that species) in Cm with FP so that I can assess relative risk of regression.
 
-setwd("/Users/KatieMartin/Documents/Manuscripts/Martin 2019 MHC/Martin_July2021_MHC_data/")
 # Read in data
 data <- read.csv("classI_juveniles_morpho_FP.csv")
 
@@ -198,7 +197,7 @@ Cm_risks <- rbind(Cm_risks, df_HA_Chmy33)
 
 
 # Read in row names for graph
-Cm_row_names <- data.frame("allele"= c("Chmy01", "Chmy02", "Chmy04", "Chmy05", "Chmy10", "Chmy33"))
+Cm_row_names <- data.frame("allele"= c("Chmy01", "Chmy02", "Chmy04", "Chmy05", "Chmy10", "*Chmy33")) # asterisk to denote Haldane-Anscombe corrected
 
 risk_ratio_regressed_top_Cm_alleles <- cbind(Cm_row_names, Cm_risks)
 
