@@ -675,7 +675,10 @@ Cm_risks <- rbind(Cm_risks, df_Chmy62)
 # Read in row names for graph
 Cm_allele <- read.csv("Cm_topalleles_rownames.csv")
 
-risk_ratio_top_Cm_alleles <- cbind(Cm_allele, Cm_risks)
+# Read in row names for graph
+Cm_row_names <- data.frame("allele"= c("Chmy02","Chmy01","Chmy10","Chmy04","Chmy05","Chmy03","Chmy09","Chmy06","Chmy41","Chmy11","Chmy12","Chmy21","Chmy17","Chmy48","Chmy07","Chmy18","Chmy33","Chmy49","Chmy08","Chmy13","Chmy14","Chmy20","Chmy50","Chmy35","Chmy62"))
+
+risk_ratio_top_Cm_alleles <- cbind(Cm_row_names, Cm_risks)
 
 # graph a forest plot
 
