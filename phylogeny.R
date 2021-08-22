@@ -16,6 +16,7 @@ tree <-read.beast("classI_nucleotide_alm.nex.con.tre")
 tree
 
 data <- read.csv("allele_counts_by_species.csv") # individuals per allele, by site (Florida or Cape Verde) and species (C. mydas and C. caretta)
+data = subset(data, select = -c(X)) # remove first column
 
 data$Cm[which(data$Cm > 0)] <- "Cm"
 data$Cc[which(data$Cc > 0)] <- "Cc"
