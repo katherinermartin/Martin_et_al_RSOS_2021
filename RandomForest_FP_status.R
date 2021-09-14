@@ -51,7 +51,7 @@ data <- data[,-6]
 
 # Check for imbalance in response variable (FP)
 length(which(data$FP==0)) #163 Cm without FP
-length(which(data$FP==1)) #105 Cm with FP, for ~30.7% FP. This is unbalanced enough that we need to account for it by over-sampling the under-represented class (FP positive) and under-sampling the over-represented class (FP negative). Set the sampsize parameter to 2/3 of the under-represented class, and use that sample size in conjunction with the strata option when building the random trees and when training.
+length(which(data$FP==1)) #105 Cm with FP, for ~39.17% FP. This is unbalanced enough that we need to account for it by over-sampling the under-represented class (FP positive) and under-sampling the over-represented class (FP negative). Set the sampsize parameter to 2/3 of the under-represented class, and use that sample size in conjunction with the strata option when building the random trees and when training.
 
 # there are 105 FP positive individuals; 105*(2/3) = 70 individuals, so we'll sample 70 FP positive individuals and 70 FP negative individuals for the training data set so that the resutling tree forest is not biased.
 
@@ -68,7 +68,7 @@ sample_size <- c(70,70) # will use subsequently with strata.
 results_optimization <- matrix(data=NA , nrow = 0, ncol = 3) # create matrix that the following loop will dump info into
 for (i in seq(from = 100, to = 1000 , by = 100)){  # values of ntree
   print(i)
-  for (j in c(10, 21, 11, 21.6, 36, 108)){    #values of mtry based on 109 total predictors
+  for (j in c(10, 21, 11, 21.6, 36, 108)){    #values of mtry based on 108 total predictors
     rf_ij <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=i, mtry=j, strata=as.factor(data$FP), sampsize=sample_size)
     results_optimization <- rbind(results_optimization, c(i,j,tail(rf_ij$err.rate,1)[1]))
   }
@@ -176,5 +176,32 @@ sum(diag(table(Prediction = data.predict,Truth = data.test$FP))) / sum(table(Pre
 # Importance Sampling
 importance(data.model)
 varImpPlot(data.model, main = "Cm FP")
-dev.copy(pdf, file="~/Documents/UCF/Research/MHC_Class_I/Analysis/Figures/RF/Feb21/RF_importance_FP.pdf")
-dev.off()
+
+
+
+# Let's also build a model based on the default mtry, since it also did decently in the tuning.
+
+# Separate into training and test data (70% and 30%, respectively)
+set.seed(3)
+train = sample(1:nrow(data), 0.7*nrow(data))
+data.test = data[train,]
+data.train = data[-train,]
+
+# Create random forest model using training data set
+# Make sure to exclude the sample ID column (data.train[,-1])
+set.seed(3)
+data.model_10 <- randomForest(FP ~ .,
+                              data = data.train[,-1],
+                              importance=TRUE,
+                              proximity=TRUE,
+                              ntree=10000, # based on tuning for ntree above
+                              strata=as.factor(data$FP), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
+data.model_10 # OOB-ER = 37.04%
+
+# Use the model built above to make predictions on the test data
+data.predict_10 = predict(data.model_10, newdata = data.test[,-1])
+
+# Build a confusion matrix and calculate accuracy of predicted model
+table(Prediction = data.predict_10, Truth = data.test$FP)
+sum(diag(table(Prediction = data.predict_10,Truth = data.test$FP))) / sum(table(Prediction = data.predict_10,Truth = data.test$FP)) # Accuracy of model with all variables: #67.914%
+# accuracy is comparable between the two mtry values, but the OOB-ER is better with the tuned mtry value
