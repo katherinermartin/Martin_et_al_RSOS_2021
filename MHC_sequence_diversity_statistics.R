@@ -1,5 +1,3 @@
-setwd("/Users/KatieMartin/Documents/Manuscripts/Martin 2019 MHC/Martin_2021_MHC_data/")
-
 library(tidyverse)
 library(ape)
 library(pegas)
