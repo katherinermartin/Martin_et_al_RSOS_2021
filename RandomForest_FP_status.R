@@ -127,7 +127,7 @@ colnames(importance_rf_default_a)<-c("importance")
 importance_rf_default_b <- data.frame(importance(rf_default_b,type=1))
 colnames(importance_rf_default_b)<-c("importance")
 
-cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9983 for predictor importance values between forests when mtry = 10.34 and ntree = 10,000
+cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.998319 for predictor importance values between forests when mtry = 10.34 and ntree = 10,000
 
 # forest with mtry = 21
 
@@ -144,7 +144,7 @@ colnames(importance_rf_21_a)<-c("importance")
 importance_rf_21_b <- data.frame(importance(rf_21_b,type=1))
 colnames(importance_rf_21_b)<-c("importance")
 
-cor(importance_rf_21_a,importance_rf_21_b) # A correlation of 0.9994 for predictor importance values between forests when mtry = 21 and ntree = 10,000
+cor(importance_rf_21_a,importance_rf_21_b) # A correlation of 0.9994113 for predictor importance values between forests when mtry = 21 and ntree = 10,000
 
 # Build final model with mtry = 21, ntree = 10,000, as mtry = 21 had higher importance value correlation
 
