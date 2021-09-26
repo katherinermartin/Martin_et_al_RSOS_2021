@@ -6,7 +6,7 @@ library(dplyr)
 
 # read in data
 
-data_full <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv") # this includes C. mydas and C. caretta records
+data_full <- read.csv("classI_juveniles_morpho_FP_v3.csv") # this includes C. mydas and C. caretta records
 
 data_full <- data_full %>% filter(!is.na(Carap_L_sl)) # remove any record without straight carapace length (SCL) measurement (just 1)
 
