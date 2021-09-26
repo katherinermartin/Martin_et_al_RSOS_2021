@@ -6,7 +6,7 @@ library(dplyr)
 
 # read in data
 
-data_full <- read.csv("classI_juveniles_morpho_FP.csv") # this includes C. mydas and C. caretta records
+data_full <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv") # this includes C. mydas and C. caretta records
 
 data_full <- data_full %>% filter(!is.na(Carap_L_sl)) # remove any record without straight carapace length (SCL) measurement (just 1)
 
@@ -43,7 +43,7 @@ data <- data_full %>% filter(species == "Chelonia mydas") # keep just the Cm; 26
 
 # as a result of filtering to just Cm individuals, the following alleles are no longer relevant (they were found just in Cc) and can be removed
 
-data <- subset(data, select = -c(Carca32, Carca14, Carca11, Carca16, Carca17, Carca27, Carca13, Carca56, Caca03, Carca28, Carca109, Caca04, Caca05, Carca25, Caca06, Caca07, Caca08))
+data <- subset(data, select = -c(Carca32, Carca14, Carca11, Carca16, Carca17, Carca27, Carca13, Carca56, Caca03, Carca28, Carca109, Caca04, Caca05, Carca25, Caca06, Caca07, Caca08, Carca81))
 
 # remove paps_regressed, which is part of a separate model ("RandomForest_TumorRegression.R").
 data <- data[,-6]
@@ -63,13 +63,13 @@ sample_size <- c(70,70) # will use subsequently with strata.
 # let's also run mtry values of sqrt(p), 2*sqrt(p), 0.1(p), 0.2(p), p/3, in addition to p, where p is the number of variables.
 # Run each mtry at ntree= 100 to 1000 (by increments of 100), looking for plateau where the out of bag error rate (OOB-ER) is minimized while also maximizing the RF algorithm. The mtry value that minimizes the OOB-ER will be chosen for subsequent analyses.
 
-# We are using 108 variables to explain FP occurence (this excludes the first column, which is sample ID, and FP occurence which is the response)
+# We are using 107 variables to explain FP occurence (this excludes the first column, which is sample ID, and FP occurence which is the response)
 
 results_optimization <- matrix(data=NA , nrow = 0, ncol = 3) # create matrix that the following loop will dump info into
 for (i in seq(from = 100, to = 1000 , by = 100)){  # values of ntree
   print(i)
-  for (j in c(10, 21, 11, 21.6, 36, 108)){    #values of mtry based on 108 total predictors
-    rf_ij <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=i, mtry=j, strata=as.factor(data$FP), sampsize=sample_size)
+  for (j in c(10.3, 20.7, 10.7, 21.4, 35.7, 107)){    #values of mtry based on 107 total predictors
+    rf_ij <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=i, mtry=j, strata=as.factor(data$FP), sampsize=sample_size)
     results_optimization <- rbind(results_optimization, c(i,j,tail(rf_ij$err.rate,1)[1]))
   }
 }
@@ -79,12 +79,12 @@ results_optimization<-as.data.frame(results_optimization)
 colnames(results_optimization)<-c("ntree", "mtry","OOB_ER")
 
 # Now plot results to see if there's a plateau
-plot(results_optimization$ntree[results_optimization$mtry == 10],results_optimization$OOB_ER[results_optimization$mtry == 10], type="l", col="black", xlab="ntree",ylab="OOB-ER",ylim=c(0,1))
-lines(results_optimization$ntree[results_optimization$mtry == 21],results_optimization$OOB_ER[results_optimization$mtry == 21], col="blue")
-lines(results_optimization$ntree[results_optimization$mtry == 11],results_optimization$OOB_ER[results_optimization$mtry == 11], col="green")
-lines(results_optimization$ntree[results_optimization$mtry == 21.6],results_optimization$OOB_ER[results_optimization$mtry == 21.6], col="purple")
-lines(results_optimization$ntree[results_optimization$mtry == 36],results_optimization$OOB_ER[results_optimization$mtry == 36], col="orange")
-lines(results_optimization$ntree[results_optimization$mtry == 108],results_optimization$OOB_ER[results_optimization$mtry == 108], col="red")
+plot(results_optimization$ntree[results_optimization$mtry == 10.3],results_optimization$OOB_ER[results_optimization$mtry == 10.3], type="l", col="black", xlab="ntree",ylab="OOB-ER",ylim=c(0,1))
+lines(results_optimization$ntree[results_optimization$mtry == 20.7],results_optimization$OOB_ER[results_optimization$mtry == 20.7], col="blue")
+lines(results_optimization$ntree[results_optimization$mtry == 10.7],results_optimization$OOB_ER[results_optimization$mtry == 10.7], col="green")
+lines(results_optimization$ntree[results_optimization$mtry == 21.4],results_optimization$OOB_ER[results_optimization$mtry == 21.4], col="purple")
+lines(results_optimization$ntree[results_optimization$mtry == 35.7],results_optimization$OOB_ER[results_optimization$mtry == 35.7], col="orange")
+lines(results_optimization$ntree[results_optimization$mtry == 107],results_optimization$OOB_ER[results_optimization$mtry == 107], col="red")
 
 # all mtry parameters seem to behave similarly with no discernable plateau, so it may be best to explore further or use defaults, i.e., sqrt(p)
 
@@ -93,32 +93,32 @@ control <- trainControl(method="oob", number=10, search = "grid")
 seed <- 7
 metric <- "Accuracy"
 set.seed(seed)
-mtry <- sqrt(108) # square root of total number of variables; this is the default mtry
+mtry <- sqrt(107) # square root of total number of variables; this is the default mtry
 tunegrid <- expand.grid(.mtry=mtry)
-rf_default <- train(FP~., data=data[,2:110], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
-print(rf_default) # mtry = 10.39 at 71.6% accuracy.
+rf_default <- train(FP~., data=data[,2:109], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
+print(rf_default) # mtry = 10.34 at 73.5% accuracy.
 
 # now let's fine tune
 ## Grid search, where method = "oob"
 control <- trainControl(method="oob", number=10, search="grid")
 set.seed(seed)
-tunegrid <- expand.grid(.mtry=c(1:108)) # doing full 108
-rf_gridsearch <- train(FP~., data=data[,2:110], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
+tunegrid <- expand.grid(.mtry=c(1:107)) # doing full 107 mtry
+rf_gridsearch <- train(FP~., data=data[,2:109], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
 print(rf_gridsearch)
-plot(rf_gridsearch) # most accurate: mtry 82 at 74.6%
+plot(rf_gridsearch) # most accurate: mtry 21 at 74.6%
 
-# Now begin the full Random Forest analyses: going to use mtry = 10.39 (default), and mtry = 82, which was given from grid search tuning.
+# Now begin the full Random Forest analyses: going to use mtry = 10.34 (default), and mtry = 21 which was given from grid search tuning.
 
 # run a large number of trees with the above mtry values, in order to know what value of ntree achieves convergence of importance values between forests.
 # As a starting point, grow 10,000 trees and increase if necessary.
 
 # forests with default mtry:
 
-rf_default_a <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_all_1,file="rf_all_1.Rdata")
+rf_default_a <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_default_a,file="rf_default_a.Rdata")
 
-rf_default_b <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_all_2,file="rf_all_2.Rdata")
+rf_default_b <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_default_b,file="rf_default_b.Rdata")
 
 #Check correlation of predictor importance values between forests 
 importance_rf_default_a <- data.frame(importance(rf_default_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important predictor)
@@ -127,26 +127,26 @@ colnames(importance_rf_default_a)<-c("importance")
 importance_rf_default_b <- data.frame(importance(rf_default_b,type=1))
 colnames(importance_rf_default_b)<-c("importance")
 
-cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9985 for predictor importance values between forests when mtry = 10 and ntree = 10,000
+cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9983 for predictor importance values between forests when mtry = 10.34 and ntree = 10,000
 
-# forest with mtry = 82
+# forest with mtry = 21
 
-rf_82_a <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=82, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_all_1,file="rf_all_1.Rdata")
+rf_21_a <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=21, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_21_a,file="rf_21_a.Rdata")
 
-rf_82_b <- randomForest(x = data[,2:110], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=82, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_all_2,file="rf_all_2.Rdata")
+rf_21_b <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=21, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_21_b,file="rf_21_b.Rdata")
 
 #Check correlation of locus importance values between forests 
-importance_rf_82_a <- data.frame(importance(rf_82_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
-colnames(importance_rf_82_a)<-c("importance")
+importance_rf_21_a <- data.frame(importance(rf_21_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
+colnames(importance_rf_21_a)<-c("importance")
 
-importance_rf_82_b <- data.frame(importance(rf_82_b,type=1))
-colnames(importance_rf_82_b)<-c("importance")
+importance_rf_21_b <- data.frame(importance(rf_21_b,type=1))
+colnames(importance_rf_21_b)<-c("importance")
 
-cor(importance_rf_82_a,importance_rf_82_b) # A correlation of 0.9999 for predictor importance values between forests when mtry = 82 and ntree = 10,000
+cor(importance_rf_21_a,importance_rf_21_b) # A correlation of 0.9994 for predictor importance values between forests when mtry = 21 and ntree = 10,000
 
-# Build final model with mtry = 82, ntree = 10,000, as mtry = 82 had higher importance value correlation
+# Build final model with mtry = 21, ntree = 10,000, as mtry = 21 had higher importance value correlation
 
 # Separate into training and test data (70% and 30%, respectively)
 set.seed(3)
@@ -161,17 +161,17 @@ data.model = randomForest(FP ~ .,
                           data = data.train[,-1],
                           importance=TRUE,
                           proximity=TRUE,
-                          mtry=82, # based on tuning done above
+                          mtry=21, # based on tuning done above
                           ntree=10000, # based on tuning for ntree above
                           strata=as.factor(data$FP), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
-data.model # OOB-ER = 25.93%
+data.model # OOB-ER = 29.63%
 
 # Use the model built above to make predictions on the test data
 data.predict = predict(data.model,newdata = data.test[,-1])
 
 # Build a confusion matrix and calculate accuracy of predicted model
 table(Prediction = data.predict,Truth = data.test$FP)
-sum(diag(table(Prediction = data.predict,Truth = data.test$FP))) / sum(table(Prediction = data.predict,Truth = data.test$FP)) # Accuracy of model with all variables: #67.37%
+sum(diag(table(Prediction = data.predict,Truth = data.test$FP))) / sum(table(Prediction = data.predict,Truth = data.test$FP)) # Accuracy of model with all variables: #70.05%
 
 # Importance Sampling
 importance(data.model)
