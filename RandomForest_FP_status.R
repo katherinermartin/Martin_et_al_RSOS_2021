@@ -45,17 +45,19 @@ data <- data_full %>% filter(species == "Chelonia mydas") # keep just the Cm; 26
 
 data <- subset(data, select = -c(Carca32, Carca14, Carca11, Carca16, Carca17, Carca27, Carca13, Carca56, Caca03, Carca28, Carca109, Caca04, Caca05, Carca25, Caca06, Caca07, Caca08, Carca81))
 
-# remove paps_regressed, which is part of a separate model ("RandomForest_TumorRegression.R").
+# remove paps_texture, which is part of a separate model ("RandomForest_TumorRegression.R").
 data <- data[,-6]
+
+colnames(data)
 
 
 # Check for imbalance in response variable (FP)
-length(which(data$FP==0)) #163 Cm without FP
-length(which(data$FP==1)) #105 Cm with FP, for ~39.17% FP. This is unbalanced enough that we need to account for it by over-sampling the under-represented class (FP positive) and under-sampling the over-represented class (FP negative). Set the sampsize parameter to 2/3 of the under-represented class, and use that sample size in conjunction with the strata option when building the random trees and when training.
+length(which(data$FP==0)) #162 Cm without FP
+length(which(data$FP==1)) #106 Cm with FP, for ~39.55% FP. This is unbalanced enough that we need to account for it by over-sampling the under-represented class (FP positive) and under-sampling the over-represented class (FP negative). Set the sampsize parameter to 2/3 of the under-represented class, and use that sample size in conjunction with the strata option when building the random trees and when training.
 
-# there are 105 FP positive individuals; 105*(2/3) = 70 individuals, so we'll sample 70 FP positive individuals and 70 FP negative individuals for the training data set so that the resutling tree forest is not biased.
+# there are 106 FP positive individuals; 106*(2/3) = 70.7 = 71 individuals, so we'll sample 71 FP positive individuals and 71 FP negative individuals for the training data set so that the resutling tree forest is not biased.
 
-sample_size <- c(70,70) # will use subsequently with strata.
+sample_size <- c(71,71) # will use subsequently with strata.
 
 # Random Forest analysis
 
@@ -96,7 +98,7 @@ set.seed(seed)
 mtry <- sqrt(107) # square root of total number of variables; this is the default mtry
 tunegrid <- expand.grid(.mtry=mtry)
 rf_default <- train(FP~., data=data[,2:109], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
-print(rf_default) # mtry = 10.34 at 73.5% accuracy.
+print(rf_default) # mtry = 10.34 at 72.0% accuracy.
 
 # now let's fine tune
 ## Grid search, where method = "oob"
@@ -105,9 +107,9 @@ set.seed(seed)
 tunegrid <- expand.grid(.mtry=c(1:107)) # doing full 107 mtry
 rf_gridsearch <- train(FP~., data=data[,2:109], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
 print(rf_gridsearch)
-plot(rf_gridsearch) # most accurate: mtry 21 at 74.6%
+plot(rf_gridsearch) # most accurate: mtry 17 at 75.0%
 
-# Now begin the full Random Forest analyses: going to use mtry = 10.34 (default), and mtry = 21 which was given from grid search tuning.
+# Now begin the full Random Forest analyses: going to use mtry = 10.34 (default), and mtry = 17 which was given from grid search tuning.
 
 # run a large number of trees with the above mtry values, in order to know what value of ntree achieves convergence of importance values between forests.
 # As a starting point, grow 10,000 trees and increase if necessary.
@@ -127,26 +129,26 @@ colnames(importance_rf_default_a)<-c("importance")
 importance_rf_default_b <- data.frame(importance(rf_default_b,type=1))
 colnames(importance_rf_default_b)<-c("importance")
 
-cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.998319 for predictor importance values between forests when mtry = 10.34 and ntree = 10,000
+cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9988924 for predictor importance values between forests when mtry = 10.34 and ntree = 10,000
 
-# forest with mtry = 21
+# forest with mtry = 17
 
-rf_21_a <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=21, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_21_a,file="rf_21_a.Rdata")
+rf_17_a <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=17, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_17_a,file="rf_17_a.Rdata")
 
-rf_21_b <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=21, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
-#save(rf_21_b,file="rf_21_b.Rdata")
+rf_17_b <- randomForest(x = data[,2:109], y = as.factor(data$FP), importance=TRUE ,proximity=TRUE, mtry=17, ntree=10000, strata=as.factor(data$FP), sampsize=sample_size)
+#save(rf_17_b,file="rf_17_b.Rdata")
 
 #Check correlation of locus importance values between forests 
-importance_rf_21_a <- data.frame(importance(rf_21_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
-colnames(importance_rf_21_a)<-c("importance")
+importance_rf_17_a <- data.frame(importance(rf_17_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
+colnames(importance_rf_17_a)<-c("importance")
 
-importance_rf_21_b <- data.frame(importance(rf_21_b,type=1))
-colnames(importance_rf_21_b)<-c("importance")
+importance_rf_17_b <- data.frame(importance(rf_17_b,type=1))
+colnames(importance_rf_17_b)<-c("importance")
 
-cor(importance_rf_21_a,importance_rf_21_b) # A correlation of 0.9994113 for predictor importance values between forests when mtry = 21 and ntree = 10,000
+cor(importance_rf_17_a,importance_rf_17_b) # A correlation of 0.9991887 for predictor importance values between forests when mtry = 17 and ntree = 10,000
 
-# Build final model with mtry = 21, ntree = 10,000, as mtry = 21 had higher importance value correlation
+# Build final model with mtry = 17, ntree = 10,000, as mtry = 17 had higher importance value correlation
 
 # Separate into training and test data (70% and 30%, respectively)
 set.seed(3)
@@ -161,10 +163,10 @@ data.model = randomForest(FP ~ .,
                           data = data.train[,-1],
                           importance=TRUE,
                           proximity=TRUE,
-                          mtry=21, # based on tuning done above
+                          mtry=17, # based on tuning done above
                           ntree=10000, # based on tuning for ntree above
                           strata=as.factor(data$FP), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
-data.model # OOB-ER = 29.63%
+data.model # OOB-ER = 37.04%
 
 # Use the model built above to make predictions on the test data
 data.predict = predict(data.model,newdata = data.test[,-1])
@@ -196,7 +198,7 @@ data.model_10 <- randomForest(FP ~ .,
                               proximity=TRUE,
                               ntree=10000, # based on tuning for ntree above
                               strata=as.factor(data$FP), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
-data.model_10 # OOB-ER = 37.04%
+data.model_10 # OOB-ER = 35.8%
 
 # Use the model built above to make predictions on the test data
 data.predict_10 = predict(data.model_10, newdata = data.test[,-1])
@@ -204,4 +206,4 @@ data.predict_10 = predict(data.model_10, newdata = data.test[,-1])
 # Build a confusion matrix and calculate accuracy of predicted model
 table(Prediction = data.predict_10, Truth = data.test$FP)
 sum(diag(table(Prediction = data.predict_10,Truth = data.test$FP))) / sum(table(Prediction = data.predict_10,Truth = data.test$FP)) # Accuracy of model with all variables: #67.914%
-# accuracy is comparable between the two mtry values, but the OOB-ER is better with the tuned mtry value
+# accuracy and OOB-ER are comparable
