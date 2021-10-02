@@ -5,7 +5,7 @@ library(caret)
 library(dplyr)
 
 # read in data
-data_full <- read.csv("classI_juveniles_morpho_FP_v3.csv") # this includes C. mydas and C. caretta records
+data_full <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv") # this includes C. mydas and C. caretta records
 
 data_full <- data_full %>% filter(!is.na(Carap_L_sl)) # remove any record without straight carapace length (SCL) measurement (just 1)
 
@@ -46,14 +46,14 @@ data <- data[,-5] # remove "FP" variable which is part of a separate model ("Ran
 data <- subset(data, select = -c(Caca01,Carca09,Carca32,Carca15,Carca19,Caca02,Carca14,Carca11,Carca16,Carca17,Carca27,Carca13,Chmy26,Chmy27,Carca56,Caca03,Carca28,Carca109,Caca04,Chmy59,Caca05,Carca25,Carca81,Caca06,Chmy77,Chmy78,Caca07,Chmy86,Caca08,Chmy88,Chmy92))
 
 # Check for imbalance in response variable (regression)
-length(which(data$paps_texture==0)) # 77 C. mydas with rough tumor texture
-length(which(data$paps_texture==1)) # 28 C. mydas with smooth tumor texture for 26.7% regression.
+length(which(data$paps_texture==0)) # 80 C. mydas with rough tumor texture
+length(which(data$paps_texture==1)) # 26 C. mydas with smooth tumor texture for 24.5% regression.
 
 # This is unbalanced enough that we need to account for it by over-sampling the under-represented class (regression) and under-sampling the over-represented class (active tumor). Set the sampsize parameter to 2/3 of the under-represented class, and use that sample size in conjunction with the strata option when building the random trees and when training.
 
-# there are 28 regressed tumor individuals; 28*(2/3) = 18.67 == 19 individuals, so we'll sample 19 regressed tumor individuals and 19 active tumor individuals for the training data set so that the resutling tree forest is not biased.
+# there are 28 regressed tumor individuals; 26*(2/3) = 17.3 == 17 individuals, so we'll sample 17 smooth tumor individuals and 17 rough tumor individuals for the training data set so that the resutling tree forest is not biased.
 
-sample_size <- c(19,19) # will use subsequently with strata.
+sample_size <- c(17,17) # will use subsequently with strata.
 
 # Random Forest analysis
 
@@ -61,12 +61,12 @@ sample_size <- c(19,19) # will use subsequently with strata.
 # let's also run mtry values of sqrt(p), 2*sqrt(p), 0.1(p), 0.2(p), p/3, in addition to p, where p is the number of variables.
 # Run each mtry at ntree= 100 to 1000 (by increments of 100), looking for plateau where the out of bag error rate (OOB-ER) is minimized while also maximizing the RF algorithm. The mtry value that minimizes the OOB-ER will be chosen for subsequent analyses.
 
-# We are using 95 variables to explain tumor regression status (this excludes the first column, which is sample ID, and regression status which is the response)
+# We are using 94 variables to explain tumor regression status (this excludes the first column, which is sample ID, and regression status which is the response)
 
 results_optimization <- matrix(data=NA , nrow = 0, ncol = 3) # create matrix that the following loop will dump info into
 for (i in seq(from = 100, to = 1000 , by = 100)){  # values of ntree
   print(i)
-  for (j in c(9.7, 19.4, 9.4, 18.8, 31.3, 94)){    #values of mtry based on 96 total predictors
+  for (j in c(9.7, 19.4, 9.4, 18.8, 31.3, 94)){    #values of mtry based on 94 total predictors
     rf_ij <- randomForest(x = data[,2:96], y = as.factor(data$paps_texture), importance=TRUE ,proximity=TRUE, ntree=i, mtry=j, strata=as.factor(data$paps_texture), sampsize=sample_size)
     results_optimization <- rbind(results_optimization, c(i,j,tail(rf_ij$err.rate,1)[1]))
   }
@@ -85,7 +85,7 @@ lines(results_optimization$ntree[results_optimization$mtry == 31.3],results_opti
 lines(results_optimization$ntree[results_optimization$mtry == 94],results_optimization$OOB_ER[results_optimization$mtry == 94], col="red")
 
 
-# all mtry parameters seem to behave similarly with no discernable plateau (although for mtry = 9.5, improvement after 200 trees), so it may be best to explore further or use defaults, i.e., sqrt(p)
+# all mtry parameters seem to behave similarly with no discernable plateau so it may be best to explore further or use defaults, i.e., sqrt(p)
 
 # Create model with default paramters as a baseline, grid search with "oob" method
 control <- trainControl(method="oob", number=10, search = "grid")
@@ -95,7 +95,7 @@ set.seed(seed)
 mtry <- sqrt(94)
 tunegrid <- expand.grid(.mtry=mtry)
 rf_default <- train(paps_texture~., data=data[,2:96], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
-print(rf_default) # mtry = 9.695 at 75.2381% accuracy.
+print(rf_default) # mtry = 9.695 at 75.47% accuracy.
 
 # now let's fine tune
 ## Grid search, where method = "oob"
@@ -104,7 +104,7 @@ set.seed(seed)
 tunegrid <- expand.grid(.mtry=c(1:94)) # doing full 94
 rf_gridsearch <- train(paps_texture~., data=data[,2:96], method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
 print(rf_gridsearch)
-plot(rf_gridsearch) # most accurate: mtry 7 at 76.19048%
+plot(rf_gridsearch) # most accurate: mtry 11 at 78.30%
 
 # Now begin the full Random Forest analyses: going to use mtry = 9.695 (default), and mtry = 7; 7  was given from grid search tuning with decently high accuracy.
 
@@ -123,24 +123,24 @@ colnames(importance_rf_default_a)<-c("importance")
 importance_rf_default_b <- data.frame(importance(rf_default_b,type=1))
 colnames(importance_rf_default_b)<-c("importance")
 
-cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9961736 for predictor importance values between forests when mtry = 9.695 and ntree = 10,000
+cor(importance_rf_default_a,importance_rf_default_b) # A correlation of 0.9966458 for predictor importance values between forests when mtry = 9.695 and ntree = 10,000
 
-# forests with mtry = 7
+# forests with mtry = 11
 
-rf_7_a <- randomForest(x = data[,2:96], y = as.factor(data$paps_texture), importance=TRUE ,proximity=TRUE, mtry=7, ntree=10000, strata=as.factor(data$paps_texture), sampsize=sample_size)
+rf_11_a <- randomForest(x = data[,2:96], y = as.factor(data$paps_texture), importance=TRUE ,proximity=TRUE, mtry=11, ntree=10000, strata=as.factor(data$paps_texture), sampsize=sample_size)
 
-rf_7_b <- randomForest(x = data[,2:96], y = as.factor(data$paps_texture), importance=TRUE ,proximity=TRUE, mtry=7, ntree=10000, strata=as.factor(data$paps_texture), sampsize=sample_size)
+rf_11_b <- randomForest(x = data[,2:96], y = as.factor(data$paps_texture), importance=TRUE ,proximity=TRUE, mtry=11, ntree=10000, strata=as.factor(data$paps_texture), sampsize=sample_size)
 
 #Check correlation of locus importance values between forests 
-importance_rf_7_a <- data.frame(importance(rf_7_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
-colnames(importance_rf_7_a)<-c("importance")
+importance_rf_11_a <- data.frame(importance(rf_11_a,type=1)) #type=1 is mean decrease in accuracy for classification, so a large, positive value means that permuting the variable led to a big decrease in prediction accuracy (which is indicative of an important locus)
+colnames(importance_rf_11_a)<-c("importance")
 
-importance_rf_7_b <- data.frame(importance(rf_7_b,type=1))
-colnames(importance_rf_7_b)<-c("importance")
+importance_rf_11_b <- data.frame(importance(rf_11_b,type=1))
+colnames(importance_rf_11_b)<-c("importance")
 
-cor(importance_rf_7_a,importance_rf_7_b) # A correlation of 0.9961842 for predictor importance values between forests when mtry = 7 and ntree = 10,000
+cor(importance_rf_11_a,importance_rf_11_b) # A correlation of 0.9972759 for predictor importance values between forests when mtry = 11 and ntree = 10,000
 
-# Build final model with mtry = 7, ntree = 10,000, as mtry = 7 had slightly importance value correlation
+# Build final model with mtry = 11, ntree = 10,000, as mtry = 11 had slightly importance value correlation
 
 # Separate into training and test data (70% and 30%, respectively)
 set.seed(3)
@@ -155,17 +155,17 @@ data.model = randomForest(paps_texture ~ .,
                           data = data.train[,-1],
                           importance=TRUE,
                           proximity=TRUE,
-                          mtry=7, # based on tuning done above
+                          mtry=11, # based on tuning done above
                           ntree=10000, # based on tuning for ntree above
-                          strata=as.factor(data$paps_texture), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
-data.model # OOB-ER = 40.62%
+                          strata=as.factor(data$paps_texture), sampsize=sample_size) # take into account imbalance in texture type
+data.model # OOB-ER = 25%
 
 # Use the model built above to make predictions on the test data
 data.predict = predict(data.model,newdata = data.test[,-1])
 
 # Build a confusion matrix and calculate accuracy of predicted model
 table(Prediction = data.predict,Truth = data.test$paps_texture)
-sum(diag(table(Prediction = data.predict,Truth = data.test$paps_texture))) / sum(table(Prediction = data.predict,Truth = data.test$paps_texture)) # Accuracy of model with all variables: #75.34247%
+sum(diag(table(Prediction = data.predict,Truth = data.test$paps_texture))) / sum(table(Prediction = data.predict,Truth = data.test$paps_texture)) # Accuracy of model with all variables: 71.62162%
 
 # Importance Sampling
 importance(data.model)
@@ -188,17 +188,13 @@ data.model_defaultmtry <- randomForest(paps_texture ~ .,
                                        proximity=TRUE,
                                        ntree=10000, # based on tuning for ntree above
                                        strata=as.factor(data$paps_texture), sampsize=sample_size) # take into account imbalance in FP postiives vs FP negatives
-data.model_defaultmtry # OOB-ER = 40.62%
+data.model_defaultmtry # OOB-ER = 28.12%
 
 # Use the model built above to make predictions on the test data
 data.predict_defaultmtry = predict(data.model_defaultmtry, newdata = data.test[,-1])
 
 # Build a confusion matrix and calculate accuracy of predicted model
 table(Prediction = data.predict_defaultmtry, Truth = data.test$paps_texture)
-sum(diag(table(Prediction = data.predict_defaultmtry,Truth = data.test$paps_texture))) / sum(table(Prediction = data.predict_defaultmtry,Truth = data.test$paps_texture)) # Accuracy of model with all variables: #72.60%
+sum(diag(table(Prediction = data.predict_defaultmtry,Truth = data.test$paps_texture))) / sum(table(Prediction = data.predict_defaultmtry,Truth = data.test$paps_texture)) # Accuracy of model with all variables: #74.32%
 
-# RF built with mtry = 7 has better accuracy than RF built with default mtry
-
-# Importance Sampling
-imp <- importance(data.model_defaultmtry)
-varImpPlot(data.model_defaultmtry, main = "Cm tumor smoothness default mtry")
+# RF built with mtry = 11 has better accuracy and OOB-ER than RF built with default mtry
