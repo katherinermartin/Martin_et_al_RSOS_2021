@@ -9,7 +9,7 @@ library(ggplot2)
 # top alleles (those alleles that occur in 10 or more individuals of that species) in Cm with FP so that I can assess relative risk of smooth vs rough texture
 
 # Read in data
-data <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv")
+data <- read.csv("classI_juveniles_morpho_FP_v3.csv")
 
 # filter to C. mydas records with FP
 Cm_data <- data %>% filter(species == "Chelonia mydas") %>% # filter to just Cm
