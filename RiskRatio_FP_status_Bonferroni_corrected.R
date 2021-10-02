@@ -8,7 +8,7 @@ library(ggplot2)
 library(svglite)
 
 # Load data
-data <- read.csv("classI_juveniles_morpho_FP.csv")
+data <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv")
 
 # filter to C. mydas records only
 Cm_data <- data %>% filter(species == "Chelonia mydas")
@@ -44,7 +44,7 @@ Chmy02_risk <- epi.2by2(tab2_Chmy02, method = "cohort.count", conf.level = 0.998
 
 Chmy02_risk
 
-df_Chmy02 <- as.data.frame(Chmy02_risk$massoc$RR.strata.wald)
+df_Chmy02 <- as.data.frame(Chmy02_risk$massoc.summary)
 
 # Chmy01
 Cm_data[Cm_data$Chmy01 == 1, "Chmy01"] <- "Chmy01 +"
@@ -68,7 +68,7 @@ Chmy01_risk <- epi.2by2(tab2_Chmy01, method = "cohort.count", conf.level = 0.998
 
 Chmy01_risk
 
-df_Chmy01 <- as.data.frame(Chmy01_risk$massoc$RR.strata.wald)
+df_Chmy01 <- as.data.frame(Chmy01_risk$massoc.summary)
 
 Cm_risks <- rbind(df_Chmy02, df_Chmy01)
 
@@ -94,7 +94,7 @@ Chmy10_risk <- epi.2by2(tab2_Chmy10, method = "cohort.count", conf.level = 0.998
 
 Chmy10_risk
 
-df_Chmy10 <- as.data.frame(Chmy10_risk$massoc$RR.strata.wald)
+df_Chmy10 <- as.data.frame(Chmy10_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy10)
 
@@ -120,7 +120,7 @@ Chmy04_risk <- epi.2by2(tab2_Chmy04, method = "cohort.count", conf.level = 0.998
 
 Chmy04_risk
 
-df_Chmy04 <- as.data.frame(Chmy04_risk$massoc$RR.strata.wald)
+df_Chmy04 <- as.data.frame(Chmy04_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy04)
 
@@ -146,7 +146,7 @@ Chmy05_risk <- epi.2by2(tab2_Chmy05, method = "cohort.count", conf.level = 0.998
 
 Chmy05_risk
 
-df_Chmy05 <- as.data.frame(Chmy05_risk$massoc$RR.strata.wald)
+df_Chmy05 <- as.data.frame(Chmy05_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy05)
 
@@ -172,7 +172,7 @@ Chmy03_risk <- epi.2by2(tab2_Chmy03, method = "cohort.count", conf.level = 0.998
 
 Chmy03_risk
 
-df_Chmy03 <- as.data.frame(Chmy03_risk$massoc$RR.strata.wald)
+df_Chmy03 <- as.data.frame(Chmy03_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy03)
 
@@ -198,7 +198,7 @@ Chmy09_risk <- epi.2by2(tab2_Chmy09, method = "cohort.count", conf.level = 0.998
 
 Chmy09_risk
 
-df_Chmy09 <- as.data.frame(Chmy09_risk$massoc$RR.strata.wald)
+df_Chmy09 <- as.data.frame(Chmy09_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy09)
 
@@ -224,7 +224,7 @@ Chmy06_risk <- epi.2by2(tab2_Chmy06, method = "cohort.count", conf.level = 0.998
 
 Chmy06_risk
 
-df_Chmy06 <- as.data.frame(Chmy06_risk$massoc$RR.strata.wald)
+df_Chmy06 <- as.data.frame(Chmy06_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy06)
 
@@ -250,7 +250,7 @@ Chmy41_risk <- epi.2by2(tab2_Chmy41, method = "cohort.count", conf.level = 0.998
 
 Chmy41_risk
 
-df_Chmy41 <- as.data.frame(Chmy41_risk$massoc$RR.strata.wald)
+df_Chmy41 <- as.data.frame(Chmy41_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy41)
 
@@ -276,7 +276,7 @@ Chmy11_risk <- epi.2by2(tab2_Chmy11, method = "cohort.count", conf.level = 0.998
 
 Chmy11_risk
 
-df_Chmy11 <- as.data.frame(Chmy11_risk$massoc$RR.strata.wald)
+df_Chmy11 <- as.data.frame(Chmy11_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy11)
 
@@ -302,7 +302,7 @@ Chmy12_risk <- epi.2by2(tab2_Chmy12, method = "cohort.count", conf.level = 0.998
 
 Chmy12_risk
 
-df_Chmy12 <- as.data.frame(Chmy12_risk$massoc$RR.strata.wald)
+df_Chmy12 <- as.data.frame(Chmy12_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy12)
 
@@ -328,7 +328,7 @@ Chmy21_risk <- epi.2by2(tab2_Chmy21, method = "cohort.count", conf.level = 0.998
 
 Chmy21_risk
 
-df_Chmy21 <- as.data.frame(Chmy21_risk$massoc$RR.strata.wald)
+df_Chmy21 <- as.data.frame(Chmy21_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy21)
 
@@ -354,7 +354,7 @@ Chmy17_risk <- epi.2by2(tab2_Chmy17, method = "cohort.count", conf.level = 0.998
 
 Chmy17_risk
 
-df_Chmy17 <- as.data.frame(Chmy17_risk$massoc$RR.strata.wald)
+df_Chmy17 <- as.data.frame(Chmy17_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy17)
 
@@ -381,7 +381,7 @@ Chmy48_risk <- epi.2by2(tab2_Chmy48, method = "cohort.count", conf.level = 0.998
 
 Chmy48_risk
 
-df_Chmy48 <- as.data.frame(Chmy48_risk$massoc$RR.strata.wald)
+df_Chmy48 <- as.data.frame(Chmy48_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy48)
 
@@ -407,7 +407,7 @@ Chmy07_risk <- epi.2by2(tab2_Chmy07, method = "cohort.count", conf.level = 0.998
 
 Chmy07_risk
 
-df_Chmy07 <- as.data.frame(Chmy07_risk$massoc$RR.strata.wald)
+df_Chmy07 <- as.data.frame(Chmy07_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy07)
 
@@ -433,7 +433,7 @@ Chmy18_risk <- epi.2by2(tab2_Chmy18, method = "cohort.count", conf.level = 0.998
 
 Chmy18_risk
 
-df_Chmy18 <- as.data.frame(Chmy18_risk$massoc$RR.strata.wald)
+df_Chmy18 <- as.data.frame(Chmy18_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy18)
 
@@ -459,7 +459,7 @@ Chmy33_risk <- epi.2by2(tab2_Chmy33, method = "cohort.count", conf.level = 0.998
 
 Chmy33_risk
 
-df_Chmy33 <- as.data.frame(Chmy33_risk$massoc$RR.strata.wald)
+df_Chmy33 <- as.data.frame(Chmy33_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy33)
 
@@ -485,7 +485,7 @@ Chmy49_risk <- epi.2by2(tab2_Chmy49, method = "cohort.count", conf.level = 0.998
 
 Chmy49_risk
 
-df_Chmy49 <- as.data.frame(Chmy49_risk$massoc$RR.strata.wald)
+df_Chmy49 <- as.data.frame(Chmy49_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy49)
 
@@ -511,7 +511,7 @@ Chmy08_risk <- epi.2by2(tab2_Chmy08, method = "cohort.count", conf.level = 0.998
 
 Chmy08_risk
 
-df_Chmy08 <- as.data.frame(Chmy08_risk$massoc$RR.strata.wald)
+df_Chmy08 <- as.data.frame(Chmy08_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy08)
 
@@ -537,7 +537,7 @@ Chmy13_risk <- epi.2by2(tab2_Chmy13, method = "cohort.count", conf.level = 0.998
 
 Chmy13_risk
 
-df_Chmy13 <- as.data.frame(Chmy13_risk$massoc$RR.strata.wald)
+df_Chmy13 <- as.data.frame(Chmy13_risk$massoc.summary)
 
 
 Cm_risks <- rbind(Cm_risks, df_Chmy13)
@@ -564,7 +564,7 @@ Chmy14_risk <- epi.2by2(tab2_Chmy14, method = "cohort.count", conf.level = 0.998
 
 Chmy14_risk
 
-df_Chmy14 <- as.data.frame(Chmy14_risk$massoc$RR.strata.wald)
+df_Chmy14 <- as.data.frame(Chmy14_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy14)
 
@@ -590,7 +590,7 @@ Chmy20_risk <- epi.2by2(tab2_Chmy20, method = "cohort.count", conf.level = 0.998
 
 Chmy20_risk
 
-df_Chmy20 <- as.data.frame(Chmy20_risk$massoc$RR.strata.wald)
+df_Chmy20 <- as.data.frame(Chmy20_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy20)
 
@@ -616,7 +616,7 @@ Chmy50_risk <- epi.2by2(tab2_Chmy50, method = "cohort.count", conf.level = 0.998
 
 Chmy50_risk
 
-df_Chmy50 <- as.data.frame(Chmy50_risk$massoc$RR.strata.wald)
+df_Chmy50 <- as.data.frame(Chmy50_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy50)
 
@@ -642,7 +642,7 @@ Chmy35_risk <- epi.2by2(tab2_Chmy35, method = "cohort.count", conf.level = 0.998
 
 Chmy35_risk
 
-df_Chmy35 <- as.data.frame(Chmy35_risk$massoc$RR.strata.wald)
+df_Chmy35 <- as.data.frame(Chmy35_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy35)
 
@@ -668,21 +668,21 @@ Chmy62_risk <- epi.2by2(tab2_Chmy62, method = "cohort.count", conf.level = 0.998
 
 Chmy62_risk
 
-df_Chmy62 <- as.data.frame(Chmy62_risk$massoc$RR.strata.wald)
+df_Chmy62 <- as.data.frame(Chmy62_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy62)
 
-# Read in row names for graph
-Cm_allele <- read.csv("Cm_topalleles_rownames.csv")
 
-# Read in row names for graph
-Cm_row_names <- data.frame("allele"= c("Chmy02","Chmy01","Chmy10","Chmy04","Chmy05","Chmy03","Chmy09","Chmy06","Chmy41","Chmy11","Chmy12","Chmy21","Chmy17","Chmy48","Chmy07","Chmy18","Chmy33","Chmy49","Chmy08","Chmy13","Chmy14","Chmy20","Chmy50","Chmy35","Chmy62"))
+Cm_risks <- Cm_risks %>% filter(var == "Inc risk ratio") # filter  to just "inc risk ratio"
 
-risk_ratio_top_Cm_alleles <- cbind(Cm_row_names, Cm_risks)
+# Add row names
+
+Cm_risks$allele <- c("Chmy02","Chmy01","Chmy10","Chmy04","Chmy05","Chmy03","Chmy09","Chmy06","Chmy41","Chmy11","Chmy12","Chmy21","Chmy17","Chmy48","Chmy07","Chmy18","Chmy33","Chmy49","Chmy08","Chmy13","Chmy14","Chmy20","Chmy50","Chmy35","Chmy62")
+
 
 # graph a forest plot
 
-ggplot(data=risk_ratio_top_Cm_alleles, aes(x=allele, y=est, ymin=lower, ymax=upper)) +
+ggplot(data=Cm_risks, aes(x=allele, y=est, ymin=lower, ymax=upper)) +
   geom_pointrange(shape = 18) +
   geom_hline(yintercept=1, lty=2, color = "red") +  # add a dotted line at x=1 after flip
   coord_flip() +  # flip coordinates (puts labels on y axis)
