@@ -5,7 +5,8 @@ library(dplyr)
 
 # read in data:
 
-df <- read.csv("classI_juveniles_morpho_FP.csv")
+df <- read.csv("/classI_juveniles_morpho_FP_v3.csv")
+
 mean <- mean(df$allele_count)
 mean # avg allele count is 3.57 across all animals
 sd(df$allele_count) # standard deviaiton is 1.41
