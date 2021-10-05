@@ -207,3 +207,7 @@ data.predict_10 = predict(data.model_10, newdata = data.test[,-1])
 table(Prediction = data.predict_10, Truth = data.test$FP)
 sum(diag(table(Prediction = data.predict_10,Truth = data.test$FP))) / sum(table(Prediction = data.predict_10,Truth = data.test$FP)) # Accuracy of model with all variables: #67.914%
 # accuracy and OOB-ER are comparable
+
+# Importance Sampling
+importance(data.model_10)
+varImpPlot(data.model_10, main = "Cm FP default mtry")
