@@ -15,15 +15,15 @@ Cm_data <- data %>% filter(species == "Chelonia mydas")
 # filter to just individuals with FP
 Cm_data <- Cm_data %>% filter (FP == 1)
 
-Cm_data[Cm_data$paps_texture == 1, "paps_texture"] <- "smooth" # replace 1s with regression and 0s with rough
-Cm_data[Cm_data$paps_texture == 0, "paps_texture"] <- "rough"
+Cm_data[Cm_data$paps_smooth_regressed == 1, "paps_smooth_regressed"] <- "smooth" # replace 1s with regression and 0s with rough
+Cm_data[Cm_data$paps_smooth_regressed == 0, "paps_smooth_regressed"] <- "rough"
 
 Cm_data$supertype_A
 # st_A
 Cm_data[Cm_data$supertype_A == 1, "supertype_A"] <- "st_A +"
 Cm_data[Cm_data$supertype_A == 0, "supertype_A"] <- "st_A -"
 
-tab_st_A <- table(Cm_data$supertype_A, Cm_data$paps_texture) # independent, dependent
+tab_st_A <- table(Cm_data$supertype_A, Cm_data$paps_smooth_regressed) # independent, dependent
 tab_st_A
 
 # rearrange so it's in ABCD format
@@ -47,7 +47,7 @@ st_A_risk <- as.data.frame(st_A_risk$massoc.summary)
 Cm_data[Cm_data$supertype_B == 1, "supertype_B"] <- "st_B +"
 Cm_data[Cm_data$supertype_B == 0, "supertype_B"] <- "st_B -"
 
-tab_st_B <- table(Cm_data$supertype_B, Cm_data$paps_texture) # independent, dependent
+tab_st_B <- table(Cm_data$supertype_B, Cm_data$paps_smooth_regressed) # independent, dependent
 tab_st_B
 
 # rearrange so it's in ABCD format
@@ -73,7 +73,7 @@ supertype_texture_risk <- rbind(st_A_risk, st_B_risk)
 Cm_data[Cm_data$supertype_C == 1, "supertype_C"] <- "st_C +"
 Cm_data[Cm_data$supertype_C == 0, "supertype_C"] <- "st_C -"
 
-tab_st_C <- table(Cm_data$supertype_C, Cm_data$paps_texture) # independent, dependent
+tab_st_C <- table(Cm_data$supertype_C, Cm_data$paps_smooth_regressed) # independent, dependent
 tab_st_C
 
 # rearrange so it's in ABCD format
@@ -112,7 +112,7 @@ supertype_texture <- ggplot(data=supertype_texture_risk, aes(x=supertype, y=est,
   geom_pointrange(shape = 18) +
   geom_hline(yintercept=1, lty=2, color = "red") +  # add a dotted line at x=1 after flip
   coord_flip() +  # flip coordinates (puts labels on y axis)
-  xlab("supertype") + ylab("relative risk estimate of tumor texture (95% CI)") +
+  xlab("supertype") + ylab("relative risk estimate of FP regression/smooth texture (95% CI)") +
   theme_bw() # use a white background
 supertype_texture
 
