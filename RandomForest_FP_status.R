@@ -45,7 +45,7 @@ data <- data_full %>% filter(species == "Chelonia mydas") # keep just the Cm; 26
 
 data <- subset(data, select = -c(Carca32, Carca14, Carca11, Carca16, Carca17, Carca27, Carca13, Carca56, Caca03, Carca28, Carca109, Caca04, Caca05, Carca25, Caca06, Caca07, Caca08, Carca81))
 
-# remove paps_texture, which is part of a separate model ("RandomForest_TumorRegression.R").
+# remove paps_smooth_regressed variable, which is part of a separate model ("RandomForest_TumorRegression.R").
 data <- data[,-6]
 
 colnames(data)
