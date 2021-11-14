@@ -7,7 +7,7 @@ library(svglite)
 
 
 # Load data
-data <- read.csv("classI_juveniles_morpho_FP_v3.csv")
+data <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv")
 
 
 # filter to C. mydas records only
@@ -202,11 +202,11 @@ st_C_risk
 
 st_C_risk <- as.data.frame(st_C_risk$massoc.summary)
 
-supertype_FP_risk <- rbind(supertype_FP_risk, st_C_risk)
+supertype_FP_risk_bonferroni <- rbind(supertype_FP_risk, st_C_risk)
 
-supertype_FP_risk <- supertype_FP_risk %>% filter(var == "Inc risk ratio") # filter  to just "inc risk ratio"
+supertype_FP_risk_bonferroni <- supertype_FP_risk %>% filter(var == "Inc risk ratio") # filter  to just "inc risk ratio"
 
-supertype_FP_risk$supertype <- c("A", "B", "C")
+supertype_FP_risk_bonferroni$supertype <- c("A", "B", "C")
 
 # graph a forest plot
 
