@@ -9,15 +9,18 @@ library(ggplot2)
 # top alleles (those alleles that occur in 10 or more individuals of that species) in Cm with FP so that I can assess relative risk of smooth vs rough texture
 
 # Read in data
-data <- read.csv("classI_juveniles_morpho_FP_v3.csv")
+data <- read.csv("/Users/KatieMartin/Documents/UCF/Research/MHC_Class_I/Data/supertype_dataframe_assignment/classI_juveniles_morpho_FP_v3.csv")
 
 # filter to C. mydas records with FP
 Cm_data <- data %>% filter(species == "Chelonia mydas") %>% # filter to just Cm
   filter(FP == 1) # filter to just FP + Cms, 106 total
 
+# remove sea turtles that are truly regressed ("regression inferred from recap records" in column "paps visually categorized as regressed at capture"). Removing from analyses regarding tumor texture. N = 7
+Cm_data <- Cm_data %>% filter(paps.visually.categorized.as.regressed.at.capture != c("regression inferred from recap records"))
 
-# Subset to the alleles that occur in 10 or more greens with FP and the columns of sample_ID and paps_smooth_regressed (0s and 1s) but include Chmy33 (only occurs in 4 C. mydas with FP), since it had very high relative importance in the random forest model.
-Cm_data <- subset(Cm_data, select = c(sample_ID, paps_smooth_regressed, Chmy02, Chmy01, Chmy10, Chmy04, Chmy05, Chmy33))
+# Subset to the alleles that occur in 10 or more greens with FP and the columns of sample_ID and paps_smooth_regressed (0s and 1s)
+
+Cm_data <- subset(Cm_data, select = c(sample_ID, paps_smooth_regressed, Chmy02, Chmy01, Chmy10, Chmy04, Chmy05))
 
 
 Cm_data[Cm_data$paps_smooth_regressed == 1, "paps_smooth_regressed"] <- "smooth" # replace 1s with smooth texture
@@ -153,46 +156,9 @@ df_Chmy10 <- as.data.frame(Chmy10_risk$massoc.summary)
 
 Cm_risks <- rbind(Cm_risks, df_Chmy10)
 
-# Chmy33
-Cm_data[Cm_data$Chmy33 == 1, "Chmy33"] <- "Chmy33 +"
-Cm_data[Cm_data$Chmy33 == 0, "Chmy33"] <- "Chmy33 -"
-
-tab_Chmy33 <- table(Chmy33, paps_smooth_regressed) # independent, dependent
-tab_Chmy33
-
-# rearrange so it's in ABCD format
-tab2_Chmy33 <- cbind(tab_Chmy33[,2], tab_Chmy33[,1]) # rearrange columns
-colnames(tab2_Chmy33) <- c("smooth", "rough")
-
-tab2_Chmy33 <- rbind(tab2_Chmy33[2,], tab2_Chmy33[1,]) # rearrange rows
-rownames(tab2_Chmy33) <- c("Chmy33 +", "Chmy33 -")
-
-tab2_Chmy33
-
-barplot(tab2_Chmy33, beside = TRUE, main = "FP texture in turtles with and without Chmy33 allele", legend.text = c("Chmy33 +", "Chmy33 -"))
-
-
-# Since one of the categories is zero (Chmy33 - and FP + ), do a Haldane-Anscombe correction: add 1 to all categories
-
-tab2_HA_Chmy33 <- matrix(c(5, 1, 25, 78), ncol =2, byrow = TRUE)
-tab2_HA_Chmy33
-colnames(tab2_HA_Chmy33) <- c("smooth", "rough")
-rownames(tab2_HA_Chmy33) <- c("Chmy33+", "Chmy33-")
-tab2_HA_Chmy33
-
-barplot(tab2_HA_Chmy33, beside = TRUE, main = "FP texture in turtles with and without Chmy33 allele, HA correction", legend.text = c("Chmy33 +", "Chmy33 -"))
-
-HA_Chmy33_risk <- epi.2by2(tab2_HA_Chmy33, method = "cohort.count", conf.level = 0.95)
-
-HA_Chmy33_risk
-
-df_HA_Chmy33 <- as.data.frame(HA_Chmy33_risk$massoc.summary)
-
-Cm_risks <- rbind(Cm_risks, df_HA_Chmy33)
-
 Cm_risks <- Cm_risks %>% filter(var == "Inc risk ratio") # filter  to just "inc risk ratio"
 
-Cm_risks$allele <- c("Chmy01", "Chmy02", "Chmy04", "Chmy05", "Chmy10", "Chmy33")
+Cm_risks$allele <- c("Chmy01", "Chmy02", "Chmy04", "Chmy05", "Chmy10")
 
 
 # graph a forest plot
@@ -201,5 +167,6 @@ ggplot(data=Cm_risks, aes(x=allele, y=est, ymin=lower, ymax=upper)) +
   geom_pointrange(shape = 18) +
   geom_hline(yintercept=1, lty=2, color = "red") +  # add a dotted line at x=1 after flip
   coord_flip() +  # flip coordinates (puts labels on y axis)
-  xlab("allele") + ylab("relative risk estimate of FP regression/smooth texture (95% CI)") +
+  xlab("allele") + ylab("relative risk estimate of smooth texture (95% CI)") +
   theme_bw() # use a white background
+
