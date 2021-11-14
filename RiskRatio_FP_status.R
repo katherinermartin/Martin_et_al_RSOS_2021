@@ -685,3 +685,4 @@ ggplot(data=Cm_risks, aes(x=allele, y=est, ymin=lower, ymax=upper)) +
   coord_flip() +  # flip coordinates (puts labels on y axis)
   xlab("allele") + ylab("relative risk estimate of FP (95% CI)") +
   theme_bw() # use a white background
+
