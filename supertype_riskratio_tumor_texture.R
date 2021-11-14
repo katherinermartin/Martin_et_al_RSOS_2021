@@ -18,6 +18,10 @@ Cm_data <- Cm_data %>% filter (FP == 1)
 Cm_data[Cm_data$paps_smooth_regressed == 1, "paps_smooth_regressed"] <- "smooth" # replace 1s with regression and 0s with rough
 Cm_data[Cm_data$paps_smooth_regressed == 0, "paps_smooth_regressed"] <- "rough"
 
+# remove sea turtles that are truly regressed ("regression inferred from recap records" in column "paps visually categorized as regressed at capture"). Removing from analyses regarding tumor texture. N = 7
+Cm_data <- Cm_data %>% filter(paps.visually.categorized.as.regressed.at.capture != c("regression inferred from recap records"))
+
+
 Cm_data$supertype_A
 # st_A
 Cm_data[Cm_data$supertype_A == 1, "supertype_A"] <- "st_A +"
@@ -87,7 +91,7 @@ tab2_st_C
 
 # Since one of the categories is zero (st_C - and smooth), do a Haldane-Anscombe correction: add 1 to all categories
 
-tab2_HA_st_C <- matrix(c(6, 99, 1, 2), ncol =2, byrow = TRUE)
+tab2_HA_st_C <- matrix(c(23, 77, 1, 2), ncol =2, byrow = TRUE)
 tab2_HA_st_C
 colnames(tab2_HA_st_C) <- c("smooth", "rough")
 rownames(tab2_HA_st_C) <- c("st_C+", "st_C-")
@@ -105,14 +109,14 @@ supertype_texture_risk <- rbind(supertype_texture_risk, st_C_risk)
 
 supertype_texture_risk <- supertype_texture_risk %>% filter(var == "Inc risk ratio") # filter  to just "inc risk ratio"
 
-supertype_texture_risk$supertype <- c("A", "B", "*C")
+supertype_texture_risk$supertype <- c("A", "B", "C")
 
 
 supertype_texture <- ggplot(data=supertype_texture_risk, aes(x=supertype, y=est, ymin=lower, ymax=upper)) +
   geom_pointrange(shape = 18) +
   geom_hline(yintercept=1, lty=2, color = "red") +  # add a dotted line at x=1 after flip
   coord_flip() +  # flip coordinates (puts labels on y axis)
-  xlab("supertype") + ylab("relative risk estimate of FP regression/smooth texture (95% CI)") +
+  xlab("supertype") + ylab("relative risk estimate of smooth texture (95% CI)") +
   theme_bw() # use a white background
 supertype_texture
 
